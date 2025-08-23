@@ -546,22 +546,6 @@ class GoogleSheetABTest:
             }
         }
 
-    def _get_basic_filter_request(self, sheet_id, num_columns, num_rows, start_row_index):
-        """Generates the API request to set a basic filter on the data table."""
-        return {
-            "setBasicFilter": {
-                "filter": {
-                    "range": {
-                        "sheetId": sheet_id,
-                        "startRowIndex": start_row_index,
-                        "endRowIndex": start_row_index + num_rows + 1,
-                        "startColumnIndex": 0,
-                        "endColumnIndex": num_columns
-                    }
-                }
-            }
-        }
-
     def create_summary_sheet(self, df, experiment_name, variant_mapping: dict=None):
         """
         Creates and formats a new spreadsheet with the provided data.
@@ -736,11 +720,6 @@ class GoogleSheetABTest:
         widths = self._calculate_column_widths(df_new)
         resize_requests = self._generate_column_width_requests(sheet_id, widths)
         all_requests.extend(resize_requests)
-
-        # Aggiungi la richiesta per i filtri
-        num_columns = df_new.shape[1]
-        num_rows = len(df_new)
-        all_requests.append(self._get_basic_filter_request(sheet_id, num_columns, num_rows, start_row_index=4))
 
         self.service.spreadsheets().batchUpdate(
             spreadsheetId=self.spreadsheet_id,
