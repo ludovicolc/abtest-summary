@@ -557,6 +557,8 @@ class GoogleSheetABTest:
         analysis_type = df.iloc[0, :]['analysis_type'].upper()
         
         df_new = df.copy()
+        
+        df_new.replace([np.inf, -np.inf], np.nan)
 
         df_new['%_lift'] = df_new.ate / df_new.control_variant_mean.replace(0, np.nan)
         df_new['%_ci_lower'] = df_new.ate_ci_lower / df_new.control_variant_mean.replace(0, np.nan)
