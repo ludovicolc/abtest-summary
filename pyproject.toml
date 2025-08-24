@@ -11,7 +11,8 @@ dependencies = [
     "gspread (>=6.2.1,<7.0.0)",
     "google-api-python-client (>=2.179.0,<3.0.0)",
     "google-auth (>=2.40.3,<3.0.0)",
-    "pandas (>=2.3.2,<3.0.0)"
+    "pandas (>=2.3.2,<3.0.0)",
+    "numpy (>=2.3.2,<3.0.0)"
 ]
 
 

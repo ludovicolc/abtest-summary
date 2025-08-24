@@ -1,4 +1,5 @@
 import gspread
+import numpy as np
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
@@ -557,9 +558,9 @@ class GoogleSheetABTest:
         
         df_new = df.copy()
 
-        df_new['%_lift'] = df_new.ate / df_new.control_variant_mean
-        df_new['%_ci_lower'] = df_new.ate_ci_lower / df_new.control_variant_mean
-        df_new['%_ci_upper'] = df_new.ate_ci_upper / df_new.control_variant_mean
+        df_new['%_lift'] = df_new.ate / df_new.control_variant_mean.replace(0, np.nan)
+        df_new['%_ci_lower'] = df_new.ate_ci_lower / df_new.control_variant_mean.replace(0, np.nan)
+        df_new['%_ci_upper'] = df_new.ate_ci_upper / df_new.control_variant_mean.replace(0, np.nan)
         
         df_new = df_new[[
             'metric_alias', 'treatment_variant_name', 'dimension_name', 'dimension_value',
