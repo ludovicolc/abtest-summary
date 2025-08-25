@@ -56,7 +56,7 @@ class GoogleSheetABTest:
         self.gc = gspread.authorize(self.credentials)
         self.service = build('sheets', 'v4', credentials=self.credentials)
 
-    def _calculate_column_widths(self, df, header_only_cols=range(4, 13), padding=5):
+    def _calculate_column_widths(self, df, header_only_cols=range(4, 15), padding=5):
         """Calculates optimal column widths based on content."""
         widths = []
         for i, col in enumerate(df.columns):
@@ -68,7 +68,6 @@ class GoogleSheetABTest:
         return widths
 
     def _generate_column_width_requests(self, sheet_id, widths):
-        """Generates API requests to set column widths."""
         requests = []
         for i, char_len in enumerate(widths):
             pixel_size = int(char_len * 7.2)
@@ -93,7 +92,7 @@ class GoogleSheetABTest:
             "updateBorders": {
                 "range": {
                     "sheetId": sheet_id,
-                    "startRowIndex": 5,
+                    "startRowIndex": 1,
                     "endRowIndex": 1000,
                     "startColumnIndex": 0,
                     "endColumnIndex": 26
@@ -151,8 +150,8 @@ class GoogleSheetABTest:
             "repeatCell": {
                 "range": {
                     "sheetId": sheet_id, 
-                    "startRowIndex": 4, 
-                    "endRowIndex": 5
+                    "startRowIndex": 0, 
+                    "endRowIndex": 1
                 },
                 "cell": {
                     "userEnteredFormat": {
@@ -178,10 +177,10 @@ class GoogleSheetABTest:
             "repeatCell": {
                 "range": {
                     "sheetId": sheet_id, 
-                    "startRowIndex": 4, 
-                    "endRowIndex": 5,
-                    "startColumnIndex": 4, 
-                    "endColumnIndex": 13
+                    "startRowIndex": 0, 
+                    "endRowIndex": 1,
+                    "startColumnIndex": 6, 
+                    "endColumnIndex": 15
                 },
                 "cell": {
                     "userEnteredFormat": {
@@ -211,8 +210,8 @@ class GoogleSheetABTest:
             "updateBorders": {
                 "range": {
                     "sheetId": sheet_id, 
-                    "startRowIndex": 4, 
-                    "endRowIndex": 5, 
+                    "startRowIndex": 0, 
+                    "endRowIndex": 1, 
                     "startColumnIndex": 0, 
                     "endColumnIndex": 26
                 },
@@ -248,10 +247,10 @@ class GoogleSheetABTest:
             "updateBorders": {
                 "range": {
                     "sheetId": sheet_id, 
-                    "startRowIndex": 4, 
-                    "endRowIndex": 5, 
-                    "startColumnIndex": 4, 
-                    "endColumnIndex": 13
+                    "startRowIndex": 0, 
+                    "endRowIndex": 1, 
+                    "startColumnIndex": 6, 
+                    "endColumnIndex": 15
                 },
                 "top": {
                     "style": "SOLID", 
@@ -326,8 +325,8 @@ class GoogleSheetABTest:
                 "repeatCell": {
                     "range": {
                         "sheetId": sheet_id, 
-                        "startRowIndex": i + 5,
-                        "endRowIndex": i + 6
+                        "startRowIndex": i + 1,
+                        "endRowIndex": i + 2
                     },
                     "cell": {
                         "userEnteredFormat": {
@@ -339,27 +338,23 @@ class GoogleSheetABTest:
             })
         return requests
 
-    def _get_conditional_formatting_requests(self, sheet_id, alpha):
+    def _get_conditional_formatting_requests(self, sheet_id):
         return [
             {
                 "addConditionalFormatRule": {
                     "rule": {
                         "ranges": [{
                             "sheetId": sheet_id, 
-                            "startRowIndex": 5, 
-                            "startColumnIndex": 7, 
-                            "endColumnIndex": 13
+                            "startRowIndex": 1, 
+                            "startColumnIndex": 9, 
+                            "endColumnIndex": 15
                         }],
                         "booleanRule": {
                             "condition": {
                                 "type": "NUMBER_GREATER", 
-                                "values": [{
-                                    "userEnteredValue": "0"
-                                }]
+                                "values": [{"userEnteredValue": "0"}]
                             },
-                            "format": {
-                                "backgroundColor": self.positive_back
-                            }
+                            "format": {"backgroundColor": self.positive_back}
                         }
                     }, 
                     "index": 0
@@ -370,23 +365,19 @@ class GoogleSheetABTest:
                     "rule": {
                         "ranges": [{
                             "sheetId": sheet_id, 
-                            "startRowIndex": 5,
-                            "startColumnIndex": 7, 
-                            "endColumnIndex": 13
+                            "startRowIndex": 1,
+                            "startColumnIndex": 9, 
+                            "endColumnIndex": 15
                         }],
                         "booleanRule": {
                             "condition": {
                                 "type": "NUMBER_LESS", 
-                                "values": [{
-                                    "userEnteredValue": "0"
-                                }]
+                                "values": [{"userEnteredValue": "0"}]
                             },
-                            "format": {
-                                "backgroundColor": self.negative_back
-                            }
+                            "format": {"backgroundColor": self.negative_back}
                         }
                     }, 
-                    "index": 0
+                    "index": 1
                 }
             },
             {
@@ -394,23 +385,19 @@ class GoogleSheetABTest:
                     "rule": {
                         "ranges": [{
                             "sheetId": sheet_id, 
-                            "startRowIndex": 5, 
-                            "startColumnIndex": 6, 
-                            "endColumnIndex": 7
+                            "startRowIndex": 1, 
+                            "startColumnIndex": 8, 
+                            "endColumnIndex": 9
                         }],
                         "booleanRule": {
                             "condition": {
                                 "type": "CUSTOM_FORMULA", 
-                                "values": [{
-                                    "userEnteredValue": f"=G6>{2 * alpha}"
-                                }]
+                                "values": [{"userEnteredValue": "=AND(I2>=F2, I2<=(2*F2))"}]
                             },
-                            "format": {
-                                "backgroundColor": self.negative_back
-                            }
+                            "format": {"backgroundColor": self.mid_back}
                         }
                     }, 
-                    "index": 0
+                    "index": 2
                 }
             },
             {
@@ -418,23 +405,19 @@ class GoogleSheetABTest:
                     "rule": {
                         "ranges": [{
                             "sheetId": sheet_id, 
-                            "startRowIndex": 5, 
-                            "startColumnIndex": 6, 
-                            "endColumnIndex": 7
+                            "startRowIndex": 1, 
+                            "startColumnIndex": 8, 
+                            "endColumnIndex": 9
                         }],
                         "booleanRule": {
                             "condition": {
                                 "type": "CUSTOM_FORMULA", 
-                                "values": [{
-                                    "userEnteredValue": f"=G6<{alpha}"
-                                }]
+                                "values": [{"userEnteredValue": "=I2<F2"}]
                             },
-                            "format": {
-                                "backgroundColor": self.positive_back
-                            }
+                            "format": {"backgroundColor": self.positive_back}
                         }
                     }, 
-                    "index": 0
+                    "index": 3
                 }
             },
             {
@@ -442,23 +425,19 @@ class GoogleSheetABTest:
                     "rule": {
                         "ranges": [{
                             "sheetId": sheet_id, 
-                            "startRowIndex": 5, 
-                            "startColumnIndex": 6, 
-                            "endColumnIndex": 7
+                            "startRowIndex": 1, 
+                            "startColumnIndex": 8, 
+                            "endColumnIndex": 9
                         }],
                         "booleanRule": {
                             "condition": {
                                 "type": "CUSTOM_FORMULA", 
-                                "values": [{
-                                    "userEnteredValue": f"=AND(G6>={alpha}, G6<={2 * alpha})"
-                                }]
+                                "values": [{"userEnteredValue": "=I2>(2*F2)"}]
                             },
-                            "format": {
-                                "backgroundColor": self.mid_back
-                            }
+                            "format": {"backgroundColor": self.negative_back}
                         }
                     }, 
-                    "index": 0
+                    "index": 4
                 }
             }
         ]
@@ -469,9 +448,9 @@ class GoogleSheetABTest:
                 "repeatCell": {
                     "range": {
                         "sheetId": sheet_id, 
-                        "startRowIndex": 4, 
+                        "startRowIndex": 0, 
                         "endRowIndex": 1000, 
-                        "startColumnIndex": 4, 
+                        "startColumnIndex": 6, 
                         "endColumnIndex": num_columns
                     },
                     "cell": {
@@ -486,10 +465,10 @@ class GoogleSheetABTest:
                 "repeatCell": {
                     "range": {
                         "sheetId": sheet_id, 
-                        "startRowIndex": 4, 
+                        "startRowIndex": 0, 
                         "endRowIndex": 1000, 
                         "startColumnIndex": 0, 
-                        "endColumnIndex": 4
+                        "endColumnIndex": 6
                     },
                     "cell": {
                         "userEnteredFormat": {
@@ -506,10 +485,10 @@ class GoogleSheetABTest:
             "repeatCell": {
                 "range": {
                     "sheetId": sheet_id, 
-                    "startRowIndex": 4, 
+                    "startRowIndex": 1, 
                     "endRowIndex": 1000, 
-                    "startColumnIndex": 4, 
-                    "endColumnIndex": 10
+                    "startColumnIndex": 6, 
+                    "endColumnIndex": 12
                 },
                 "cell": {
                     "userEnteredFormat": {
@@ -529,10 +508,10 @@ class GoogleSheetABTest:
             "repeatCell": {
                 "range": {
                     "sheetId": sheet_id, 
-                    "startRowIndex": 4, 
+                    "startRowIndex": 1, 
                     "endRowIndex": 1000, 
-                    "startColumnIndex": 10, 
-                    "endColumnIndex": 13
+                    "startColumnIndex": 12, 
+                    "endColumnIndex": 15
                 },
                 "cell": {
                     "userEnteredFormat": {
@@ -553,9 +532,6 @@ class GoogleSheetABTest:
         """
         experiment_name = experiment_name + '_summary'
         
-        alpha = df.iloc[0, :]['alpha']
-        analysis_type = df.iloc[0, :]['analysis_type'].upper()
-        
         df_new = df.copy()
         
         df_new.replace([np.inf, -np.inf], np.nan, inplace=True)
@@ -566,6 +542,7 @@ class GoogleSheetABTest:
         
         df_new = df_new[[
             'metric_alias', 'treatment_variant_name', 'dimension_name', 'dimension_value',
+            'analysis_type', 'alpha',
             'control_variant_mean', 'treatment_variant_mean', 'p_value',
             'ate', 'ate_ci_lower', 'ate_ci_upper',
             '%_lift', '%_ci_lower', '%_ci_upper']]
@@ -579,6 +556,8 @@ class GoogleSheetABTest:
                 'treatment_variant_name': 'Treatment', 
                 'dimension_name': 'Split', 
                 'dimension_value': 'Split Value',
+                'analysis_type': 'Analysis Type', 
+                'alpha': 'Alpha',
                 'control_variant_mean': 'Control Mean', 
                 'treatment_variant_mean': 'Treatment Mean', 
                 'p_value': 'P-Value',
@@ -602,7 +581,7 @@ class GoogleSheetABTest:
                     'properties': {
                         'title': experiment_name,
                         'gridProperties': {
-                            'rowCount': len(df_new) + 5,
+                            'rowCount': len(df_new),
                             'columnCount': df_new.shape[1]
                         }
                     }
@@ -618,97 +597,15 @@ class GoogleSheetABTest:
         sheet_info = response['replies'][0]['addSheet']['properties']
         sheet_id = sheet_info['sheetId']
         worksheet = self.gc.open_by_key(self.spreadsheet_id).worksheet(experiment_name)
-        
-        # Write "Test Configurations" table
-        worksheet.update(
-            [
-                ['Test Configurations', ''], 
-                ['Type', analysis_type], 
-                ['Alpha', alpha]
-            ], 'A1'
-        )
 
-        # Paste the data starting from row 5
+        # Paste the data starting from row 1
         worksheet.update(
             [df_new.columns.values.tolist()] + df_new.values.tolist(), 
-            'A5'
+            'A1'
         )
 
         # List of formatting requests
         all_requests = []
-        
-        # Add white borders from row 1 to 4
-        all_requests.append({
-            "updateBorders": {
-                "range": {
-                    "sheetId": sheet_id,
-                    "startRowIndex": 0,
-                    "endRowIndex": 4,
-                    "startColumnIndex": 0,
-                    "endColumnIndex": 26
-                },
-                "top": {"style": "SOLID", "color": {"red": 1, "green": 1, "blue": 1}},
-                "bottom": {"style": "SOLID", "color": {"red": 1, "green": 1, "blue": 1}},
-                "left": {"style": "SOLID", "color": {"red": 1, "green": 1, "blue": 1}},
-                "right": {"style": "SOLID", "color": {"red": 1, "green": 1, "blue": 1}},
-                "innerHorizontal": {"style": "SOLID", "color": {"red": 1, "green": 1, "blue": 1}},
-                "innerVertical": {"style": "SOLID", "color": {"red": 1, "green": 1, "blue": 1}}
-            }
-        })
-
-        # Add "Test Configurations" table formatting
-        config_table_header_range = {
-            "sheetId": sheet_id,
-            "startRowIndex": 0,
-            "endRowIndex": 1,
-            "startColumnIndex": 0,
-            "endColumnIndex": 2
-        }
-        all_requests.append({
-            "repeatCell": {
-                "range": config_table_header_range,
-                "cell": {
-                    "userEnteredFormat": {
-                        "backgroundColor": self.header_border_color,
-                        "textFormat": {
-                            "foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0},
-                            "fontFamily": "Montserrat",
-                            "bold": True
-                        }
-                    }
-                },
-                "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment)"
-            }
-        })
-        all_requests.append({
-            "updateBorders": {
-                "range": config_table_header_range,
-                "top": {"style": "SOLID", "color": self.header_border_color},
-                "bottom": {"style": "SOLID", "color": self.header_border_color},
-                "left": {"style": "SOLID", "color": self.header_border_color},
-                "right": {"style": "SOLID", "color": self.header_border_color},
-                "innerHorizontal": {"style": "SOLID", "color": self.header_border_color},
-                "innerVertical": {"style": "SOLID", "color": self.header_border_color}
-            }
-        })
-        # Center align for B1-B3
-        all_requests.append({
-            "repeatCell": {
-                "range": {
-                    "sheetId": sheet_id,
-                    "startRowIndex": 1,
-                    "endRowIndex": 3,
-                    "startColumnIndex": 1,
-                    "endColumnIndex": 2
-                },
-                "cell": {
-                    "userEnteredFormat": {
-                        "horizontalAlignment": "CENTER"
-                    }
-                },
-                "fields": "userEnteredFormat.horizontalAlignment"
-            }
-        })
         
         # Add all formatting requests for the main table
         all_requests.append(self._get_font_request(sheet_id))
@@ -718,7 +615,7 @@ class GoogleSheetABTest:
         all_requests.append(self._get_header_values_request(sheet_id))
         all_requests.append(self._get_header_values_borders_request(sheet_id))
         all_requests.extend(self._get_row_alternating_colors(sheet_id, len(df_new)))
-        all_requests.extend(self._get_conditional_formatting_requests(sheet_id, alpha))
+        all_requests.extend(self._get_conditional_formatting_requests(sheet_id))
         all_requests.append(self._get_alignment_requests(sheet_id, df_new.shape[1]))
         all_requests.append(self._get_number_format_request(sheet_id))
         all_requests.append(self._get_percent_format_request(sheet_id))
